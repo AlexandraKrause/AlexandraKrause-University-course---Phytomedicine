@@ -1,0 +1,72 @@
+library(readxl)
+library(tidyverse)
+library(ggiraphExtra)
+
+Daten <- read_excel("./Daten_EC50_Endberechnung_Woche1_2.xlsx")
+Dienstag.I <- Daten %>% 
+  filter(Tag == "Dienstag", Mittel == "I")
+
+Dienstag.I.plot <- Dienstag.I %>% 
+  gather("key", "value", 4:10) %>% 
+  mutate(key = as.numeric(key))
+
+library(drc)
+
+m <- drm(Dienstag.I.plot$value ~ Dienstag.I.plot$key, fct = LL.5())
+summary(m)
+
+plot(m, xlab = "Konzentration", ylab ="Wachstum", yaxt ="n")
+xtick <- c(0.0031, 0.32, 3.16, 31.6)
+#ytick <- c(0.1, 0.3, 0.5, 0.7, 0.9)
+axis(side=1, at=xtick, labels = TRUE)
+#axis(side=2, at=ytick, labels = TRUE, hadj = 0.5, padj = 0.5)
+
+## 50% Hemmung EC50 ##
+predict(m, data.frame(dose=29.13096, CURVE=c("1", "2", "3")), se.fit = TRUE)
+
+segments(x0 = 0.0031, y0 = 0.5, x1 = 29.13096, y1 = 0.5, col = "black")
+segments(x0 = 29.13096, y0 = 0, x1 = 29.13096, y1 = 0.5, col = "black")
+
+## 95% Hemmung EC95 ##
+predict(m, data.frame(dose=72.553, CURVE=c("1", "2", "3")), se.fit = TRUE)
+
+segments(x0 = 0.0031, y0 = 0.05, x1 = 72.553, y1 = 0.05, col = "black")
+segments(x0 = 72.553, y0 = 0, x1 = 72.553, y1 = 0.05, col = "black")
+
+
+
+
+
+
+###################### 
+Daten <- read_excel("./Daten_EC50_Endberechnung_Woche1_2.xlsx")
+Daten <- Daten %>% 
+  filter(Mittel == "I")
+
+Daten.plot <- Daten %>% 
+  gather("key", "value", 4:10) %>% 
+  mutate(key = as.numeric(key))
+
+library(drc)
+
+m <- drm(Daten.plot$value ~ Daten.plot$key, fct = LL.5())
+summary(m)
+
+plot(m, xlab = "Konzentration", ylab ="Wachstum", yaxt ="n")
+xtick <- c(0.0031, 0.32, 3.16, 31.6)
+#ytick <- c(0.1, 0.3, 0.5, 0.7, 0.9)
+axis(side=1, at=xtick, labels = TRUE)
+#axis(side=2, at=ytick, labels = TRUE, hadj = 0.5, padj = 0.5)
+
+## 50% Hemmung EC50 ##
+predict(m, data.frame(dose=30.42, CURVE=c("1", "2", "3")), se.fit = TRUE)
+
+segments(x0 = 0.0031, y0 = 0.5, x1 = 30.42, y1 = 0.5, col = "black")
+segments(x0 = 30.42, y0 = 0, x1 = 30.42, y1 = 0.5, col = "black")
+text(y = 0.55, x = 0.32, labels = "30.42")
+## 95% Hemmung EC95 ##
+predict(m, data.frame(dose=72.39, CURVE=c("1", "2", "3")), se.fit = TRUE)
+
+segments(x0 = 0.0031, y0 = 0.05, x1 = 72.39, y1 = 0.05, col = "black")
+segments(x0 = 72.39, y0 = 0, x1 = 72.39, y1 = 0.05, col = "black")
+text(y = 0.1, x = 0.32, labels = "72.39")
